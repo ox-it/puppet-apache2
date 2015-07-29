@@ -1,7 +1,7 @@
 $apache2_sites = "/etc/apache2/sites"
 $apache2_mods = "/etc/apache2/mods"
 
-class apache2 {
+class apache2 ($service_provider = 'upstart') {
    package { "apache2": ensure => installed }
 
    # Define an apache2 site. Place all site configs into
@@ -57,12 +57,12 @@ class apache2 {
    # a waste of time. When the module-config changes, a force-reload is
    # needed.
    exec { "reload-apache2":
-      command => "/etc/init.d/apache2 reload",
+      command => "service apache2 reload",
       refreshonly => true,
    }
 
    exec { "force-reload-apache2":
-      command => "/etc/init.d/apache2 force-reload",
+      command => "service apache2 restart",
       refreshonly => true,
    }
 
@@ -72,6 +72,7 @@ class apache2 {
       hasstatus => true,
       hasrestart => true,
       require => Package["apache2"],
+      provider => $service_provider,
    }
 
 }
